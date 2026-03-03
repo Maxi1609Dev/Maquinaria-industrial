@@ -1,0 +1,16 @@
+[
+  {
+    "id": "m1",
+    "name": "Torno CNC",
+    "description": "Precisión 0.01mm · 5 ejes · 12.000 rpm",
+    "price": 18450,
+    "icon": "fa-rotate"
+  },
+  {
+    "id": "m2",
+    "name": "Fresadora universal",
+    "description": "Mesas 1200x600mm · cabezal automático",
+    "price": 22300,
+    "icon": "fa-wrench"
+  }
+]
