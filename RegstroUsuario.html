@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - ConstructorApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h1><i class="fas fa-user-plus"></i> Crear Cuenta</h1>
+            <p>Únete a ConstructorApp y gestiona tus proyectos de construcción</p>
+        </div>
+        
+        <div class="register-form">
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> ¡Registro exitoso! Redirigiendo al login...
+            </div>
+
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre"><i class="fas fa-user"></i> Nombre *</label>
+                        <input type="text" id="nombre" placeholder="Ingresa tu nombre">
+                        <span class="error-message" id="nombreError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellidos"><i class="fas fa-user"></i> Apellidos *</label>
+                        <input type="text" id="apellidos" placeholder="Ingresa tus apellidos">
+                        <span class="error-message" id="apellidosError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico *</label>
+                        <input type="email" id="email" placeholder="ejemplo@correo.com">
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono"><i class="fas fa-phone"></i> Número Telefónico *</label>
+                        <input type="tel" id="telefono" placeholder="+52 123 456 7890">
+                        <span class="error-message" id="telefonoError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pais"><i class="fas fa-globe"></i> País *</label>
+                        <select id="pais">
+                            <option value="">Selecciona un país</option>
+                            <option value="Mexico">México</option>
+                            <option value="España">España</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Peru">Perú</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Estados Unidos">Estados Unidos</option>
+                        </select>
+                        <span class="error-message" id="paisError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado"><i class="fas fa-map-marker-alt"></i> Estado *</label>
+                        <input type="text" id="estado" placeholder="Ingresa tu estado">
+                        <span class="error-message" id="estadoError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ciudad"><i class="fas fa-city"></i> Ciudad *</label>
+                        <input type="text" id="ciudad" placeholder="Ingresa tu ciudad">
+                        <span class="error-message" id="ciudadError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empresa"><i class="fas fa-building"></i> Constructora o Empresa *</label>
+                        <input type="text" id="empresa" placeholder="Nombre de tu empresa">
+                        <span class="error-message" id="empresaError"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Contraseña *</label>
+                    <input type="password" id="password" placeholder="Crea una contraseña">
+                    <span class="error-message" id="passwordError"></span>
+                    <div class="password-requirements" id="passwordRequirements">
+                        <p>La contraseña debe contener:</p>
+                        <ul>
+                            <li id="reqLength">Mínimo 8 caracteres</li>
+                            <li id="reqNumber">Al menos un número</li>
+                            <li id="reqUppercase">Al menos una mayúscula</li>
+                            <li id="reqLowercase">Al menos una minúscula</li>
+                            <li id="reqSpecial">Al menos un carácter especial</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña *</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirma tu contraseña">
+                    <span class="error-message" id="confirmPasswordError"></span>
+                </div>
+
+                <div class="terms-group">
+                    <input type="checkbox" id="terminos">
+                    <label for="terminos">
+                        Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a> *
+                    </label>
+                </div>
+                <span class="error-message" id="terminosError"></span>
+
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+
+                <div class="login-link">
+                    ¿Ya tienes una cuenta? <a href="login.html">Inicia Sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const successMessage = document.getElementById('successMessage');
+
+        // Validaciones en tiempo real para la contraseña
+        const password = document.getElementById('password');
+        const reqLength = document.getElementById('reqLength');
+        const reqNumber = document.getElementById('reqNumber');
+        const reqUppercase = document.getElementById('reqUppercase');
+        const reqLowercase = document.getElementById('reqLowercase');
+        const reqSpecial = document.getElementById('reqSpecial');
+
+        password.addEventListener('input', function() {
+            const value = this.value;
+            
+            // Validar longitud
+            if (value.length >= 8) {
+                reqLength.classList.add('valid');
+            } else {
+                reqLength.classList.remove('valid');
+            }
+            
+            // Validar número
+            if (/\d/.test(value)) {
+                reqNumber.classList.add('valid');
+            } else {
+                reqNumber.classList.remove('valid');
+            }
+            
+            // Validar mayúscula
+            if (/[A-Z]/.test(value)) {
+                reqUppercase.classList.add('valid');
+            } else {
+                reqUppercase.classList.remove('valid');
+            }
+            
+            // Validar minúscula
+            if (/[a-z]/.test(value)) {
+                reqLowercase.classList.add('valid');
+            } else {
+                reqLowercase.classList.remove('valid');
+            }
+            
+            // Validar carácter especial
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                reqSpecial.classList.add('valid');
+            } else {
+                reqSpecial.classList.remove('valid');
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+            
+            // Limpiar errores anteriores
+            document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+            document.querySelectorAll('input, select').forEach(e => e.classList.remove('error'));
+
+            // Validar nombre
+            const nombre = document.getElementById('nombre');
+            if (!nombre.value.trim()) {
+                document.getElementById('nombreError').textContent = 'El nombre es requerido';
+                nombre.classList.add('error');
+                isValid = false;
+            } else if (nombre.value.trim().length < 2) {
+                document.getElementById('nombreError').textContent = 'El nombre debe tener al menos 2 caracteres';
+                nombre.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar apellidos
+            const apellidos = document.getElementById('apellidos');
+            if (!apellidos.value.trim()) {
+                document.getElementById('apellidosError').textContent = 'Los apellidos son requeridos';
+                apellidos.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar email
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email.value.trim()) {
+                document.getElementById('emailError').textContent = 'El correo es requerido';
+                email.classList.add('error');
+                isValid = false;
+            } else if (!emailRegex.test(email.value)) {
+                document.getElementById('emailError').textContent = 'Ingresa un correo válido';
+                email.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar teléfono
+            const telefono = document.getElementById('telefono');
+            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+            if (!telefono.value.trim()) {
+                document.getElementById('telefonoError').textContent = 'El teléfono es requerido';
+                telefono.classList.add('error');
+                isValid = false;
+            } else if (!phoneRegex.test(telefono.value)) {
+                document.getElementById('telefonoError').textContent = 'Ingresa un teléfono válido';
+                telefono.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar país
+            const pais = document.getElementById('pais');
+            if (!pais.value) {
+                document.getElementById('paisError').textContent = 'Selecciona un país';
+                pais.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar estado
+            const estado = document.getElementById('estado');
+            if (!estado.value.trim()) {
+                document.getElementById('estadoError').textContent = 'El estado es requerido';
+                estado.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar ciudad
+            const ciudad = document.getElementById('ciudad');
+            if (!ciudad.value.trim()) {
+                document.getElementById('ciudadError').textContent = 'La ciudad es requerida';
+                ciudad.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar empresa
+            const empresa = document.getElementById('empresa');
+            if (!empresa.value.trim()) {
+                document.getElementById('empresaError').textContent = 'El nombre de la empresa es requerido';
+                empresa.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar contraseña
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+            if (!password.value) {
+                document.getElementById('passwordError').textContent = 'La contraseña es requerida';
+                password.classList.add('error');
+                isValid = false;
+            } else if (!passwordRegex.test(password.value)) {
+                document.getElementById('passwordError').textContent = 'La contraseña no cumple con los requisitos';
+                password.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar confirmación de contraseña
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (!confirmPassword.value) {
+                document.getElementById('confirmPasswordError').textContent = 'Confirma tu contraseña';
+                confirmPassword.classList.add('error');
+                isValid = false;
+            } else if (confirmPassword.value !== password.value) {
+                document.getElementById('confirmPasswordError').textContent = 'Las contraseñas no coinciden';
+                confirmPassword.classList.add('error');
+                isValid = false;
+            }
+
+            // Validar términos
+            const terminos = document.getElementById('terminos');
+            if (!terminos.checked) {
+                document.getElementById('terminosError').textContent = 'Debes aceptar los términos y condiciones';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Mostrar mensaje de éxito
+                successMessage.style.display = 'block';
+                
+                // Recopilar datos del formulario
+                const formData = {
+                    nombre: document.getElementById('nombre').value,
+                    apellidos: document.getElementById('apellidos').value,
+                    email: document.getElementById('email').value,
+                    telefono: document.getElementById('telefono').value,
+                    pais: document.getElementById('pais').value,
+                    estado: document.getElementById('estado').value,
+                    ciudad: document.getElementById('ciudad').value,
+                    empresa: document.getElementById('empresa').value,
+                    password: document.getElementById('password').value
+                };
+                
+                console.log('Datos de registro:', formData);
+                
+                // Simular registro exitoso y redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+        });
+
+        // Validación en tiempo real para campos específicos
+        document.getElementById('email').addEventListener('blur', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                document.getElementById('emailError').textContent = 'Ingresa un correo válido';
+                this.classList.add('error');
+            } else {
+                document.getElementById('emailError').textContent = '';
+                this.classList.remove('error');
+            }
+        });
+
+        document.getElementById('telefono').addEventListener('blur', function() {
+            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+            if (this.value && !phoneRegex.test(this.value)) {
+                document.getElementById('telefonoError').textContent = 'Ingresa un teléfono válido';
+                this.classList.add('error');
+            } else {
+                document.getElementById('telefonoError').textContent = '';
+                this.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
