@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="register-container">
+   <div class="register-container">
         <div class="register-header">
             <h1><i class="fas fa-user-plus"></i> Crear Cuenta</h1>
             <p>Únete a ConstructorApp y gestiona tus proyectos de construcción</p>
@@ -85,26 +85,58 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password"><i class="fas fa-lock"></i> Contraseña *</label>
-                    <input type="password" id="password" placeholder="Crea una contraseña">
-                    <span class="error-message" id="passwordError"></span>
-                    <div class="password-requirements" id="passwordRequirements">
-                        <p>La contraseña debe contener:</p>
-                        <ul>
-                            <li id="reqLength">Mínimo 8 caracteres</li>
-                            <li id="reqNumber">Al menos un número</li>
-                            <li id="reqUppercase">Al menos una mayúscula</li>
-                            <li id="reqLowercase">Al menos una minúscula</li>
-                            <li id="reqSpecial">Al menos un carácter especial</li>
-                        </ul>
-                    </div>
-                </div>
+                <!-- Sección de contraseña e identificación -->
+                <div class="identification-section">
+                    <div class="password-container">
+                        <div class="form-group">
+                            <label for="password"><i class="fas fa-lock"></i> Contraseña *</label>
+                            <input type="password" id="password" placeholder="Crea una contraseña">
+                            <span class="error-message" id="passwordError"></span>
+                            <div class="password-requirements" id="passwordRequirements">
+                                <p>La contraseña debe contener:</p>
+                                <ul>
+                                    <li id="reqLength">Mínimo 8 caracteres</li>
+                                    <li id="reqNumber">Al menos un número</li>
+                                    <li id="reqUppercase">Al menos una mayúscula</li>
+                                    <li id="reqLowercase">Al menos una minúscula</li>
+                                    <li id="reqSpecial">Al menos un carácter especial</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label for="confirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña *</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirma tu contraseña">
-                    <span class="error-message" id="confirmPasswordError"></span>
+                        <div class="form-group">
+                            <label for="confirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña *</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirma tu contraseña">
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+                    </div>
+
+                    <div class="upload-container">
+                        <h3><i class="fas fa-id-card"></i> Identificación Oficial *</h3>
+                        <div class="file-upload-area">
+                            <label for="identificacion" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Sube tu identificación</span>
+                                <small><i class="fas fa-info-circle"></i> INE, Pasaporte, Cédula</small>
+                                <small style="margin-top: 5px;">Formatos: JPG, PNG, PDF (Max. 5MB)</small>
+                            </label>
+                            <input type="file" id="identificacion" accept=".jpg,.jpeg,.png,.pdf" name="identificacion">
+                        </div>
+                        
+                        <!-- Vista previa del archivo -->
+                        <div class="file-preview" id="filePreview">
+                            <img id="previewImage" src="#" alt="Vista previa">
+                            <button type="button" class="remove-file" id="removeFile" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-info-circle"></i>
+                            <span id="fileName">Ningún archivo seleccionado</span>
+                        </div>
+                        <span class="error-message" id="identificacionError"></span>
+                    </div>
                 </div>
 
                 <div class="terms-group">
@@ -120,7 +152,7 @@
                 </button>
 
                 <div class="login-link">
-                    ¿Ya tienes una cuenta? <a href="login.html">Inicia Sesión</a>
+                    ¿Ya tienes una cuenta? <a href="logIn.html">Inicia Sesión</a>
                 </div>
             </form>
         </div>
@@ -176,6 +208,59 @@
                 reqSpecial.classList.remove('valid');
             }
         });
+
+        // Manejo de la subida de archivos
+        const identificacion = document.getElementById('identificacion');
+        const filePreview = document.getElementById('filePreview');
+        const previewImage = document.getElementById('previewImage');
+        const fileName = document.getElementById('fileName');
+        const fileInfo = document.getElementById('fileInfo');
+
+        identificacion.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Validar tamaño (5MB máximo)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 5MB.');
+                    this.value = '';
+                    return;
+                }
+
+                // Validar tipo de archivo
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Tipo de archivo no válido. Solo se permiten JPG, PNG y PDF.');
+                    this.value = '';
+                    return;
+                }
+
+                // Actualizar nombre del archivo
+                fileName.textContent = file.name;
+
+                // Mostrar vista previa si es imagen
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        filePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // Para PDF, mostrar un icono
+                    previewImage.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    filePreview.style.display = 'block';
+                }
+            }
+        });
+
+        // Función para eliminar el archivo
+        window.removeFile = function() {
+            identificacion.value = '';
+            filePreview.style.display = 'none';
+            previewImage.src = '#';
+            fileName.textContent = 'Ningún archivo seleccionado';
+        };
 
         function validateForm() {
             let isValid = true;
@@ -286,6 +371,12 @@
                 isValid = false;
             }
 
+            // Validar identificación
+            if (!identificacion.files || identificacion.files.length === 0) {
+                document.getElementById('identificacionError').textContent = 'Debes subir una identificación oficial';
+                isValid = false;
+            }
+
             // Validar términos
             const terminos = document.getElementById('terminos');
             if (!terminos.checked) {
@@ -304,19 +395,22 @@
                 successMessage.style.display = 'block';
                 
                 // Recopilar datos del formulario
-                const formData = {
-                    nombre: document.getElementById('nombre').value,
-                    apellidos: document.getElementById('apellidos').value,
-                    email: document.getElementById('email').value,
-                    telefono: document.getElementById('telefono').value,
-                    pais: document.getElementById('pais').value,
-                    estado: document.getElementById('estado').value,
-                    ciudad: document.getElementById('ciudad').value,
-                    empresa: document.getElementById('empresa').value,
-                    password: document.getElementById('password').value
-                };
+                const formData = new FormData();
+                formData.append('nombre', document.getElementById('nombre').value);
+                formData.append('apellidos', document.getElementById('apellidos').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('telefono', document.getElementById('telefono').value);
+                formData.append('pais', document.getElementById('pais').value);
+                formData.append('estado', document.getElementById('estado').value);
+                formData.append('ciudad', document.getElementById('ciudad').value);
+                formData.append('empresa', document.getElementById('empresa').value);
+                formData.append('password', document.getElementById('password').value);
                 
-                console.log('Datos de registro:', formData);
+                if (identificacion.files[0]) {
+                    formData.append('identificacion', identificacion.files[0]);
+                }
+                
+                console.log('Datos de registro:', Object.fromEntries(formData));
                 
                 // Simular registro exitoso y redirigir después de 2 segundos
                 setTimeout(() => {
@@ -350,3 +444,4 @@
     </script>
 </body>
 </html>
+    
