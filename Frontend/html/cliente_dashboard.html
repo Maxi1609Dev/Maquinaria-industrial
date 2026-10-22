@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - Dashboard Cliente</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Contenedor principal */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-area p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160, 66, 32, 0.3);
+        }
+
+        .btn-go-store {
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-go-store:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160, 66, 32, 0.3);
+        }
+
+        /* Grid principal */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        /* Tarjeta de perfil */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .info-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label i {
+            color: #a04220;
+            width: 20px;
+        }
+
+        .info-value {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .edit-btn {
+            width: 100%;
+            margin-top: 1.5rem;
+            background: transparent;
+            border: 2px solid #a04220;
+            color: #a04220;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .edit-btn:hover {
+            background: #a04220;
+            color: white;
+        }
+
+        /* Sección de historial */
+        .history-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #a04220;
+        }
+
+        /* Estadísticas rápidas */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 1.2rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: #a04220;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .stat-card .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Filtros */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.6rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #a04220;
+        }
+
+        /* Tabla de compras */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+        }
+
+        .compras-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .compras-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8f9fa;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .compras-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        .compras-table tr:hover {
+            background: rgba(160, 66, 32, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-completado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-enviado {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* Modal de edición */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: #1a1a1a;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #a04220;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .modal-form input,
+        .modal-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .modal-form input:focus,
+        .modal-form select:focus {
+            outline: none;
+            border-color: #a04220;
+        }
+
+        .modal-form button {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-form button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-card {
+                position: static;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Mensajes */
+        .message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .message.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="logo-area">
+                <h1><i class="fas fa-store"></i> Mi Tienda Virtual</h1>
+                <p>Dashboard de Cliente</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-go-store" id="go-storeBtn">
+                    <i class="fa-solid fa-cart-shopping"></i>Tienda
+                </button>
+                <button class="btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid Principal -->
+        <div class="dashboard-grid">
+            <!-- Perfil del Cliente -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="profile-name" id="clienteNombre">Cargando...</h2>
+                    <p class="profile-email" id="clienteEmail">cargando@email.com</p>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-id-card"></i> ID Cliente</span>
+                        <span class="info-value" id="clienteId">---</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-phone"></i> Teléfono</span>
+                        <span class="info-value" id="clienteTelefono">---</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> Dirección</span>
+                        <span class="info-value" id="clienteDireccion">---</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-calendar-alt"></i> Cliente desde</span>
+                        <span class="info-value" id="clienteFechaRegistro">---</span>
+                    </div>
+                </div>
+
+                <button class="edit-btn" id="editProfileBtn">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </button>
+            </div>
+
+            <!-- Historial de Compras -->
+            <div class="history-section">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Mi Historial de Compras
+                </h2>
+
+                <!-- Estadísticas -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-shopping-bag"></i>
+                        <div class="stat-number" id="totalCompras">0</div>
+                        <div class="stat-label">Total de Compras</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div class="stat-number" id="totalGastado">$0</div>
+                        <div class="stat-label">Total Gastado</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-truck"></i>
+                        <div class="stat-number" id="comprasEnviadas">0</div>
+                        <div class="stat-label">Compras Enviadas</div>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="filters">
+                    <select id="filterStatus" class="filter-select">
+                        <option value="todos">Todos los estados</option>
+                        <option value="completado">Completado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="enviado">Enviado</option>
+                    </select>
+                    <select id="filterYear" class="filter-select">
+                        <option value="todos">Todos los años</option>
+                    </select>
+                </div>
+
+                <!-- Tabla de compras -->
+                <div class="table-container">
+                    <table class="compras-table">
+                        <thead>
+                            <tr>
+                                <th>ID Compra</th>
+                                <th>Fecha</th>
+                                <th>Productos</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Método de Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comprasBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner"></i><br>
+                                        Cargando historial de compras...
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form class="modal-form" id="editProfileForm">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="editNombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="editTelefono">
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="editDireccion">
+                </div>
+                <button type="submit">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const API_URL = 'http://localhost:3000';
+        let clienteActual = null;
+        let comprasActuales = [];
+
+        // ==================== VERIFICAR SESIÓN ====================
+        function verificarSesion() {
+            const usuario = sessionStorage.getItem('usuario');
+            const token = sessionStorage.getItem('token');
+            
+            if (!usuario || !token || token !== 'logged_in') {
+                console.log('No hay sesión activa, redirigiendo al login');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            try {
+                clienteActual = JSON.parse(usuario);
+                return true;
+            } catch (e) {
+                console.error('Error al parsear usuario');
+                return false;
+            }
+        }
+
+        // ==================== CARGAR DATOS DEL CLIENTE ====================
+        async function cargarDatosCliente() {
+            try {
+                const response = await fetch(`${API_URL}/api/clientes/${clienteActual.id}`);
+                if (response.ok) {
+                    const cliente = await response.json();
+                    actualizarUIcliente(cliente);
+                    clienteActual = cliente;
+                    sessionStorage.setItem('usuario', JSON.stringify(cliente));
+                } else {
+                    // Usar datos de sesión si no hay conexión
+                    actualizarUIcliente(clienteActual);
+                }
+            } catch (error) {
+                console.error('Error al cargar cliente:', error);
+                actualizarUIcliente(clienteActual);
+                mostrarMensaje('Usando datos locales. Conecta el backend para sincronizar.', 'error');
+            }
+        }
+
+        function actualizarUIcliente(cliente) {
+            document.getElementById('clienteNombre').textContent = cliente.nombre || 'Cliente';
+            document.getElementById('clienteEmail').textContent = cliente.email || '---';
+            document.getElementById('clienteId').textContent = cliente.id || '---';
+            document.getElementById('clienteTelefono').textContent = cliente.telefono || 'No registrado';
+            document.getElementById('clienteDireccion').textContent = cliente.direccion || 'No registrada';
+            
+            if (cliente.fecha_registro) {
+                const fecha = new Date(cliente.fecha_registro);
+                document.getElementById('clienteFechaRegistro').textContent = fecha.toLocaleDateString('es-MX');
+            } else {
+                document.getElementById('clienteFechaRegistro').textContent = '---';
+            }
+        }
+
+        // ==================== CARGAR HISTORIAL DE COMPRAS ====================
+        async function cargarHistorialCompras() {
+            try {
+                const response = await fetch(`${API_URL}/api/compras/cliente/${clienteActual.id}`);
+                if (response.ok) {
+                    comprasActuales = await response.json();
+                } else {
+                    // Datos de ejemplo mientras no hay backend
+                    comprasActuales = generarComprasEjemplo();
+                }
+            } catch (error) {
+                console.error('Error al cargar compras:', error);
+                comprasActuales = generarComprasEjemplo();
+                mostrarMensaje('Cargando datos de ejemplo. Conecta el backend para datos reales.', 'error');
+            }
+            
+            actualizarEstadisticas();
+            cargarAniosFiltro();
+            renderizarCompras();
+        }
+
+        function generarComprasEjemplo() {
+            return [
+                { id: 1001, fecha: '2025-03-15', productos: 'Taladro industrial, Juego de llaves', total: 2450.00, estado: 'completado', metodo_pago: 'Tarjeta' },
+                { id: 1002, fecha: '2025-03-20', productos: 'Sierra circular', total: 12500.00, estado: 'enviado', metodo_pago: 'Transferencia' },
+                { id: 1003, fecha: '2025-04-05', productos: 'Compresor de aire', total: 8500.00, estado: 'pendiente', metodo_pago: 'Efectivo' },
+                { id: 1004, fecha: '2025-04-12', productos: 'Andamio profesional', total: 3200.00, estado: 'completado', metodo_pago: 'Tarjeta' },
+                { id: 1005, fecha: '2025-05-01', productos: 'Esmeril angular, Kit de discos', total: 1580.00, estado: 'enviado', metodo_pago: 'PayPal' }
+            ];
+        }
+
+        function actualizarEstadisticas() {
+            const totalCompras = comprasActuales.length;
+            const totalGastado = comprasActuales.reduce((sum, compra) => sum + compra.total, 0);
+            const comprasEnviadas = comprasActuales.filter(c => c.estado === 'enviado' || c.estado === 'completado').length;
+            
+            document.getElementById('totalCompras').textContent = totalCompras;
+            document.getElementById('totalGastado').textContent = `$${totalGastado.toLocaleString('es-MX')}`;
+            document.getElementById('comprasEnviadas').textContent = comprasEnviadas;
+        }
+
+        function cargarAniosFiltro() {
+            const anios = [...new Set(comprasActuales.map(c => new Date(c.fecha).getFullYear()))];
+            const filterYear = document.getElementById('filterYear');
+            anios.sort().reverse().forEach(anio => {
+                const option = document.createElement('option');
+                option.value = anio;
+                option.textContent = anio;
+                filterYear.appendChild(option);
+            });
+        }
+
+        function renderizarCompras() {
+            const status = document.getElementById('filterStatus').value;
+            const year = document.getElementById('filterYear').value;
+            
+            let comprasFiltradas = [...comprasActuales];
+            
+            if (status !== 'todos') {
+                comprasFiltradas = comprasFiltradas.filter(c => c.estado === status);
+            }
+            
+            if (year !== 'todos') {
+                comprasFiltradas = comprasFiltradas.filter(c => new Date(c.fecha).getFullYear() === parseInt(year));
+            }
+            
+            const tbody = document.getElementById('comprasBody');
+            
+            if (comprasFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay compras en este período</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            comprasFiltradas.forEach(compra => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerHTML = `<strong>#${compra.id}</strong>`;
+                row.insertCell(1).innerHTML = new Date(compra.fecha).toLocaleDateString('es-MX');
+                row.insertCell(2).innerHTML = compra.productos;
+                row.insertCell(3).innerHTML = `<strong>$${compra.total.toLocaleString('es-MX')}</strong>`;
+                row.insertCell(4).innerHTML = getEstadoBadge(compra.estado);
+                row.insertCell(5).innerHTML = compra.metodo_pago;
+            });
+        }
+
+        function getEstadoBadge(estado) {
+            const estados = {
+                'completado': '<span class="badge badge-completado"><i class="fas fa-check"></i> Completado</span>',
+                'pendiente': '<span class="badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>',
+                'enviado': '<span class="badge badge-enviado"><i class="fas fa-truck"></i> Enviado</span>'
+            };
+            return estados[estado] || `<span class="badge">${estado}</span>`;
+        }
+
+        // ==================== EDITAR PERFIL ====================
+        function abrirModalEdicion() {
+            document.getElementById('editNombre').value = clienteActual.nombre || '';
+            document.getElementById('editEmail').value = clienteActual.email || '';
+            document.getElementById('editTelefono').value = clienteActual.telefono || '';
+            document.getElementById('editDireccion').value = clienteActual.direccion || '';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        async function guardarCambiosPerfil(e) {
+            e.preventDefault();
+            
+            const datosActualizados = {
+                ...clienteActual,
+                nombre: document.getElementById('editNombre').value,
+                email: document.getElementById('editEmail').value,
+                telefono: document.getElementById('editTelefono').value,
+                direccion: document.getElementById('editDireccion').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/clientes/${clienteActual.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosActualizados)
+                });
+                
+                if (response.ok) {
+                    clienteActual = datosActualizados;
+                    sessionStorage.setItem('usuario', JSON.stringify(clienteActual));
+                    actualizarUIcliente(clienteActual);
+                    mostrarMensaje('Perfil actualizado correctamente', 'success');
+                    closeModal();
+                } else {
+                    mostrarMensaje('Error al actualizar el perfil', 'error');
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                mostrarMensaje('Error de conexión. No se pudo actualizar.', 'error');
+            }
+        }
+
+        // ==================== CERRAR SESIÓN ====================
+        function cerrarSesion() {
+            sessionStorage.removeItem('usuario');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('loginTime');
+            window.location.href = 'login.html';
+        }
+
+        // ==================== MENSAJES ====================
+        function mostrarMensaje(mensaje, tipo = 'success') {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${tipo}`;
+            msgDiv.innerHTML = `<i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${mensaje}`;
+            document.body.appendChild(msgDiv);
+            
+            setTimeout(() => {
+                msgDiv.remove();
+            }, 3000);
+        }
+
+        function goTienda(){
+            window.location.href = 'index.html';
+        }
+        // ==================== FILTROS ====================
+        document.getElementById('filterStatus').addEventListener('change', renderizarCompras);
+        document.getElementById('filterYear').addEventListener('change', renderizarCompras);
+        document.getElementById('editProfileBtn').addEventListener('click', abrirModalEdicion);
+        document.getElementById('editProfileForm').addEventListener('submit', guardarCambiosPerfil);
+        document.getElementById('logoutBtn').addEventListener('click', cerrarSesion);
+        document.getElementById('go-storeBtn').addEventListener('click',goTienda);
+        
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // ==================== INICIALIZAR ====================
+        window.onload = () => {
+            if (!verificarSesion()) return;
+            cargarDatosCliente();
+            cargarHistorialCompras();
+        };
+    </script>
+</body>
+</html>

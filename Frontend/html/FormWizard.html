@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Wizard Industrial | Formulario inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #d9dadd 0%, #a04220 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Contenedor para que solo pegues este bloque y funcione */
+        .wizard-module {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* Header progreso */
+        .wizard-progress {
+            background: #0f172a;
+            padding: 1.4rem 2rem;
+        }
+
+        .steps-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: space-between;
+        }
+
+        .step-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .step-badge:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            background: #334155;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .step-badge.active .step-circle {
+            background: #f97316;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.5);
+        }
+
+        .step-badge.completed .step-circle {
+            background: #10b981;
+        }
+
+        .step-badge.completed .step-circle span {
+            display: none;
+        }
+
+        .step-badge.completed .step-circle::after {
+            content: "✓";
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        /* cuerpo */
+        .wizard-body {
+            padding: 2rem 2rem 1.5rem 2rem;
+            background: #fefefe;
+        }
+
+        .step-pane {
+            display: none;
+            animation: fadeSlide 0.25s ease-out;
+        }
+
+        .step-pane.active-pane {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* formulario */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+            font-size: 0.9rem;
+        }
+
+        .label-required::after {
+            content: "*";
+            color: #e11d48;
+            margin-left: 4px;
+        }
+
+        select, input[type="text"], input[type="tel"], input[type="email"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            background: #fff;
+            transition: 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option, .check-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .radio-option.selected, .check-option.selected {
+            background: #fff7ed;
+            border-color: #f97316;
+            box-shadow: 0 1px 3px rgba(249,115,22,0.2);
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            accent-color: #f97316;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+
+        .error-msg {
+            color: #e11d48;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            display: block;
+        }
+
+        /* botones */
+        .wizard-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-prev {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-next, .btn-submit {
+            background: #f97316;
+            color: white;
+            box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            background: #ea580c;
+            transform: translateY(-1px);
+        }
+
+        .btn-prev:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-home {
+            background: #475569;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-home:hover {
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        /* resumen final */
+        .summary-card {
+            background: #f1f5f9;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .summary-label {
+            font-weight: 700;
+            width: 170px;
+            color: #334155;
+        }
+
+        .summary-value {
+            color: #0f172a;
+            flex: 1;
+        }
+
+        .buttons-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .buttons-row button {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        /* responsivo */
+        @media (max-width: 640px) {
+            .wizard-body {
+                padding: 1.5rem;
+            }
+            .summary-label {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+            .steps-row {
+                justify-content: center;
+            }
+            .step-badge .step-text {
+                display: none;
+            }
+            .step-badge {
+                padding: 0.4rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Este es el WIZARD completo. Solo copia este div dentro del contenedor que ya tienes en tu página -->
+    <div class="wizard-module" id="industrialWizard">
+        <div class="wizard-progress">
+            <div class="steps-row" id="stepsContainer">
+                <!-- steps se generan con js -->
+            </div>
+        </div>
+        <div class="wizard-body">
+            <!-- PANEL 1: Tipo de cliente + giro + tamaño empresa -->
+            <div class="step-pane" data-step="0" id="step1">
+                <div class="form-group">
+                    <label class="label-required">Tipo de cliente</label>
+                    <div class="radio-group" id="tipoClienteGroup">
+                        <div class="radio-option" data-value="Empresa / Industria">🏭 Empresa / Industria</div>
+                        <div class="radio-option" data-value="Técnico / Ingeniero">🔧 Técnico / Ingeniero</div>
+                        <div class="radio-option" data-value="Particular">👤 Particular</div>
+                    </div>
+                    <div class="error-msg" id="errorTipoCliente"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-required">Giro</label>
+                    <div class="radio-group" id="giroGroup">
+                        <div class="radio-option" data-value="Manufactura">🏭 Manufactura</div>
+                        <div class="radio-option" data-value="Construcción">🏗️ Construcción</div>
+                        <div class="radio-option" data-value="Automotriz">🚗 Automotriz</div>
+                        <div class="radio-option" data-value="Metalmecánica">⚙️ Metalmecánica</div>
+                    </div>
+                    <div class="error-msg" id="errorGiro"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-required">Tamaño de empresa</label>
+                    <div class="radio-group" id="tamanoGroup">
+                        <div class="radio-option" data-value="Micro">📌 Micro</div>
+                        <div class="radio-option" data-value="PyME">🏢 PyME</div>
+                        <div class="radio-option" data-value="Corporativo">🏛️ Corporativo</div>
+                    </div>
+                    <div class="error-msg" id="errorTamano"></div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: Necesidad principal + Material -->
+            <div class="step-pane" data-step="1" id="step2">
+                <div class="form-group">
+                    <label class="label-required">¿Qué necesitas hacer?</label>
+                    <div class="radio-group" id="necesidadGroup">
+                        <div class="radio-option" data-value="Cortar">✂️ Cortar</div>
+                        <div class="radio-option" data-value="Perforar">🔩 Perforar</div>
+                        <div class="radio-option" data-value="Soldar">🔥 Soldar</div>
+                        <div class="radio-option" data-value="Medir">📏 Medir</div>
+                        <div class="radio-option" data-value="Automatizar">🤖 Automatizar</div>
+                    </div>
+                    <div class="error-msg" id="errorNecesidad"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-required">Material con el que trabaja</label>
+                    <div class="radio-group" id="materialGroup">
+                        <div class="radio-option" data-value="Acero">⛓️ Acero</div>
+                        <div class="radio-option" data-value="Aluminio">🥤 Aluminio</div>
+                        <div class="radio-option" data-value="Madera">🪵 Madera</div>
+                        <div class="radio-option" data-value="Plástico">🧴 Plástico</div>
+                    </div>
+                    <div class="error-msg" id="errorMaterial"></div>
+                </div>
+            </div>
+
+            <!-- PANEL 3: Tipo de producto buscado (Categoría + Subcategoría) -->
+            <div class="step-pane" data-step="2" id="step3">
+                <div class="form-group">
+                    <label class="label-required">Categoría</label>
+                    <div class="radio-group" id="categoriaGroup">
+                        <div class="radio-option" data-value="Herramientas eléctricas">🔌 Herramientas eléctricas</div>
+                        <div class="radio-option" data-value="Maquinaria pesada">🏗️ Maquinaria pesada</div>
+                        <div class="radio-option" data-value="Instrumentación">📊 Instrumentación</div>
+                        <div class="radio-option" data-value="Refacciones">🔧 Refacciones</div>
+                    </div>
+                    <div class="error-msg" id="errorCategoria"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-required">Subcategoría</label>
+                    <div class="radio-group" id="subcategoriaGroup">
+                        <div class="radio-option" data-value="Taladros">🛠️ Taladros</div>
+                        <div class="radio-option" data-value="Tornos">⚙️ Tornos</div>
+                        <div class="radio-option" data-value="Compresores">💨 Compresores</div>
+                        <div class="radio-option" data-value="Sensores">📡 Sensores</div>
+                    </div>
+                    <div class="error-msg" id="errorSubcategoria"></div>
+                </div>
+            </div>
+
+            <!-- PANEL 4: Presupuesto 💰 -->
+            <div class="step-pane" data-step="3" id="step4">
+                <div class="form-group">
+                    <label class="label-required">Rango de presupuesto</label>
+                    <div class="radio-group" id="presupuestoGroup">
+                        <div class="radio-option" data-value="$1,000 - $5,000">💰 $1,000 - $5,000</div>
+                        <div class="radio-option" data-value="$5,000 - $20,000">💵 $5,000 - $20,000</div>
+                        <div class="radio-option" data-value="$20,000+">💎 $20,000+</div>
+                    </div>
+                    <div class="error-msg" id="errorPresupuesto"></div>
+                </div>
+            </div>
+
+            <!-- PANEL 5: Urgencia ⏱️ + datos de contacto -->
+            <div class="step-pane" data-step="4" id="step5">
+                <div class="form-group">
+                    <label class="label-required">Urgencia ⏱️</label>
+                    <div class="radio-group" id="urgenciaGroup">
+                        <div class="radio-option" data-value="Inmediato">🚨 Inmediato</div>
+                        <div class="radio-option" data-value="Esta semana">📅 Esta semana</div>
+                        <div class="radio-option" data-value="Este mes">🗓️ Este mes</div>
+                        <div class="radio-option" data-value="Solo cotización">📄 Solo cotización</div>
+                    </div>
+                    <div class="error-msg" id="errorUrgencia"></div>
+                </div>
+                <div class="form-group">
+                    <label>Nombre (opcional)</label>
+                    <input type="text" id="nombreContacto" placeholder="Ej: Juan Pérez" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label>Email (recomendado para contacto)</label>
+                    <input type="email" id="emailContacto" placeholder="tucorreo@ejemplo.com">
+                </div>
+            </div>
+
+            <!-- PANEL 6: Resumen y envío (página final) -->
+            <div class="step-pane" data-step="5" id="step6">
+                <div class="summary-card" id="resumenFinal">
+                    <!-- resumen dinámico con JS -->
+                </div>
+                <div class="buttons-row">
+                    <button id="btnFinalSubmit" class="btn-submit">📨 Enviar solicitud</button>
+                    <button id="btnGoHome" class="btn-home">🏠 Volver al inicio</button>
+                </div>
+                <div id="mensajeEnvio" style="margin-top: 12px; text-align: center; font-weight: 500;"></div>
+            </div>
+
+            <div class="wizard-buttons">
+                <button id="prevBtn" class="btn-prev" style="visibility: hidden;">◀ Anterior</button>
+                <button id="nextBtn" class="btn-next">Siguiente ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            // ---------- DATA MODEL ----------
+            let formData = {
+                tipoCliente: '',
+                giro: '',
+                tamanoEmpresa: '',
+                necesidad: '',
+                material: '',
+                categoria: '',
+                subcategoria: '',
+                presupuesto: '',
+                urgencia: '',
+                nombre: '',
+                email: ''
+            };
+
+            let currentStep = 0;
+            const totalSteps = 6;  // 6 paneles (0 al 5)
+
+            // DOM elements
+            const stepsContainer = document.getElementById('stepsContainer');
+            const panes = document.querySelectorAll('.step-pane');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finalSubmitBtn = document.getElementById('btnFinalSubmit');
+            const goHomeBtn = document.getElementById('btnGoHome');
+
+            // Funciones para radio buttons custom (actualizan data y estilos)
+            function setupRadioGroup(groupId, fieldName, isRequired = true) {
+                const container = document.getElementById(groupId);
+                if(!container) return;
+                const options = container.querySelectorAll('.radio-option');
+                options.forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const value = opt.getAttribute('data-value');
+                        // remover selección de hermanos
+                        options.forEach(o => o.classList.remove('selected'));
+                        opt.classList.add('selected');
+                        // guardar en formData
+                        formData[fieldName] = value;
+                        // limpiar error si existe
+                        const errorSpan = document.getElementById(`error${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`);
+                        if(errorSpan) errorSpan.innerText = '';
+                        // disparar actualización de resumen dinámico
+                        updateSummary();
+                    });
+                });
+                // si ya hay un valor precargado (por si se usa)
+                if(formData[fieldName]) {
+                    const selectedOpt = Array.from(options).find(opt => opt.getAttribute('data-value') === formData[fieldName]);
+                    if(selectedOpt) selectedOpt.classList.add('selected');
+                }
+            }
+
+            function setupRadioGroupSimple(groupId, fieldName) {
+                setupRadioGroup(groupId, fieldName, true);
+            }
+
+            // Validar paso actual
+            function validateStep(step) {
+                let isValid = true;
+                // limpiar errores previos
+                document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+
+                if(step === 0) {
+                    if(!formData.tipoCliente) {
+                        document.getElementById('errorTipoCliente').innerText = 'Selecciona el tipo de cliente';
+                        isValid = false;
+                    }
+                    if(!formData.giro) {
+                        document.getElementById('errorGiro').innerText = 'Indica el giro de tu actividad';
+                        isValid = false;
+                    }
+                    if(!formData.tamanoEmpresa) {
+                        document.getElementById('errorTamano').innerText = 'Selecciona el tamaño de empresa';
+                        isValid = false;
+                    }
+                } 
+                else if(step === 1) {
+                    if(!formData.necesidad) {
+                        document.getElementById('errorNecesidad').innerText = 'Elige qué necesitas hacer';
+                        isValid = false;
+                    }
+                    if(!formData.material) {
+                        document.getElementById('errorMaterial').innerText = 'Selecciona el material con el que trabajas';
+                        isValid = false;
+                    }
+                }
+                else if(step === 2) {
+                    if(!formData.categoria) {
+                        document.getElementById('errorCategoria').innerText = 'Escoge una categoría de producto';
+                        isValid = false;
+                    }
+                    if(!formData.subcategoria) {
+                        document.getElementById('errorSubcategoria').innerText = 'Selecciona una subcategoría';
+                        isValid = false;
+                    }
+                }
+                else if(step === 3) {
+                    if(!formData.presupuesto) {
+                        document.getElementById('errorPresupuesto').innerText = 'Indica un rango de presupuesto';
+                        isValid = false;
+                    }
+                }
+                else if(step === 4) {
+                    if(!formData.urgencia) {
+                        document.getElementById('errorUrgencia').innerText = 'Especifica el nivel de urgencia';
+                        isValid = false;
+                    }
+                    // nombre y email no son obligatorios pero se leen del input
+                    const nombreInput = document.getElementById('nombreContacto');
+                    const emailInput = document.getElementById('emailContacto');
+                    formData.nombre = nombreInput.value.trim();
+                    formData.email = emailInput.value.trim();
+                }
+                else if(step === 5) {
+                    // paso resumen siempre válido si llegamos hasta aquí
+                    isValid = true;
+                }
+                return isValid;
+            }
+
+            // Mostrar el paso activo, actualizar botones y steps
+            function showStep(step) {
+                // ocultar todos los paneles
+                panes.forEach((pane, idx) => {
+                    if(idx === step) {
+                        pane.classList.add('active-pane');
+                    } else {
+                        pane.classList.remove('active-pane');
+                    }
+                });
+                // actualizar step indicators
+                const stepBadges = document.querySelectorAll('.step-badge');
+                stepBadges.forEach((badge, idx) => {
+                    badge.classList.remove('active', 'completed');
+                    if(idx < step) {
+                        badge.classList.add('completed');
+                    } else if(idx === step) {
+                        badge.classList.add('active');
+                    }
+                });
+                // lógica botones
+                if(step === 0) {
+                    prevBtn.style.visibility = 'hidden';
+                } else {
+                    prevBtn.style.visibility = 'visible';
+                }
+                if(step === totalSteps - 1) { // último paso resumen
+                    nextBtn.style.display = 'none';
+                    prevBtn.style.display = 'inline-flex';
+                } else {
+                    nextBtn.style.display = 'inline-flex';
+                    prevBtn.style.display = 'inline-flex';
+                }
+                // Si estamos en el resumen, actualizar contenido
+                if(step === totalSteps - 1) {
+                    updateSummary();
+                }
+                // Asegurar que en step 4 (urgencia) capture datos de nombre/email del dom
+                if(step === 4) {
+                    const nombreInput = document.getElementById('nombreContacto');
+                    const emailInput = document.getElementById('emailContacto');
+                    if(nombreInput) formData.nombre = nombreInput.value;
+                    if(emailInput) formData.email = emailInput.value;
+                }
+            }
+
+            // Actualizar resumen final con todos los datos
+            function updateSummary() {
+                const resumenDiv = document.getElementById('resumenFinal');
+                if(!resumenDiv) return;
+                const fieldsMap = [
+                    { label: "Tipo de cliente", key: "tipoCliente" },
+                    { label: "Giro", key: "giro" },
+                    { label: "Tamaño empresa", key: "tamanoEmpresa" },
+                    { label: "Necesidad principal", key: "necesidad" },
+                    { label: "Material", key: "material" },
+                    { label: "Categoría producto", key: "categoria" },
+                    { label: "Subcategoría", key: "subcategoria" },
+                    { label: "Presupuesto", key: "presupuesto" },
+                    { label: "Urgencia", key: "urgencia" },
+                    { label: "Nombre contacto", key: "nombre" },
+                    { label: "Email", key: "email" }
+                ];
+                let html = `<h3 style="margin-bottom: 1rem; color:#0f172a;">📋 Revisa tu solicitud</h3>`;
+                fieldsMap.forEach(field => {
+                    let value = formData[field.key] || "—";
+                    if(field.key === "email" && value === "") value = "No especificado";
+                    if(field.key === "nombre" && value === "") value = "No indicado";
+                    html += `<div class="summary-item">
+                                <div class="summary-label">${field.label}:</div>
+                                <div class="summary-value">${escapeHtml(value)}</div>
+                            </div>`;
+                });
+                resumenDiv.innerHTML = html;
+            }
+
+            // Función para escapar HTML
+            function escapeHtml(str) {
+                if(!str) return str;
+                return str.replace(/[&<>]/g, function(m) {
+                    if(m === '&') return '&amp;';
+                    if(m === '<') return '&lt;';
+                    if(m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            // Evento siguiente / anterior
+            function nextStep() {
+                if(currentStep < totalSteps - 1) {
+                    if(validateStep(currentStep)) {
+                        // Capturar datos de radio que no estén en el objeto por si se necesita reforzar
+                        captureAllRadios();
+                        currentStep++;
+                        showStep(currentStep);
+                    } else {
+                        // scroll al primer error
+                        const firstError = document.querySelector('.error-msg:not(:empty)');
+                        if(firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+
+            function prevStep() {
+                if(currentStep > 0) {
+                    // antes de retroceder, capturar valores de inputs (nombre/email)
+                    if(currentStep === 4) {
+                        const nombreInput = document.getElementById('nombreContacto');
+                        const emailInput = document.getElementById('emailContacto');
+                        if(nombreInput) formData.nombre = nombreInput.value;
+                        if(emailInput) formData.email = emailInput.value;
+                    }
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            }
+
+            function captureAllRadios() {
+                // actualizar campos del formulario según selección visual
+                const grupos = [
+                    {id:'tipoClienteGroup', field:'tipoCliente'},
+                    {id:'giroGroup', field:'giro'},
+                    {id:'tamanoGroup', field:'tamanoEmpresa'},
+                    {id:'necesidadGroup', field:'necesidad'},
+                    {id:'materialGroup', field:'material'},
+                    {id:'categoriaGroup', field:'categoria'},
+                    {id:'subcategoriaGroup', field:'subcategoria'},
+                    {id:'presupuestoGroup', field:'presupuesto'},
+                    {id:'urgenciaGroup', field:'urgencia'}
+                ];
+                grupos.forEach(g => {
+                    const container = document.getElementById(g.id);
+                    if(container) {
+                        const selected = container.querySelector('.radio-option.selected');
+                        if(selected) {
+                            formData[g.field] = selected.getAttribute('data-value');
+                        }
+                    }
+                });
+                // nombre y email desde inputs si estamos en step4 o step5
+                const nombreInput = document.getElementById('nombreContacto');
+                const emailInput = document.getElementById('emailContacto');
+                if(nombreInput) formData.nombre = nombreInput.value;
+                if(emailInput) formData.email = emailInput.value;
+            }
+
+            // Envío final
+            function submitForm() {
+                captureAllRadios();
+                // validar que los datos requeridos de los primeros 5 pasos estén completos (revisión)
+                let allValid = true;
+                if(!formData.tipoCliente || !formData.giro || !formData.tamanoEmpresa) allValid=false;
+                if(!formData.necesidad || !formData.material) allValid=false;
+                if(!formData.categoria || !formData.subcategoria) allValid=false;
+                if(!formData.presupuesto) allValid=false;
+                if(!formData.urgencia) allValid=false;
+                if(!allValid) {
+                    document.getElementById('mensajeEnvio').innerHTML = '<span style="color:#e11d48;">⚠️ Faltan datos obligatorios, revisa los pasos anteriores.</span>';
+                    return;
+                }
+                // Aquí puedes enviar los datos a tu servidor. EJEMPLO fetch
+                console.log("DATOS ENVIADOS:", formData);
+                // Simulación de envío exitoso:
+                document.getElementById('mensajeEnvio').innerHTML = '<span style="color:#10b981;">✅ ¡Solicitud enviada con éxito! Te contactaremos pronto.</span>';
+                // Si quieres implementar POST real, descomenta:
+                /*
+                fetch('https://tu-api.com/endpoint', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(formData)
+                }).then(res => res.json()).then(data => {
+                    document.getElementById('mensajeEnvio').innerHTML = '<span style="color:green;">✔ Enviado correctamente</span>';
+                }).catch(err => console.error(err));
+                */
+            }
+
+            // Función para volver al index.html
+            function goToHome() {
+                window.location.href = 'index.html';
+            }
+
+            // Generar indicadores de paso en el header
+            function buildStepsIndicator() {
+                const stepsNames = ["Cliente", "Necesidad", "Producto", "Presupuesto", "Urgencia", "Resumen"];
+                let html = '';
+                stepsNames.forEach((name, idx) => {
+                    html += `
+                        <div class="step-badge" data-step-index="${idx}">
+                            <div class="step-circle"><span>${idx+1}</span></div>
+                            <span class="step-text">${name}</span>
+                        </div>
+                    `;
+                });
+                stepsContainer.innerHTML = html;
+                // asignar evento click (opcional para navegación pero se puede mantener)
+                const badges = document.querySelectorAll('.step-badge');
+                badges.forEach((badge, idx) => {
+                    badge.addEventListener('click', () => {
+                        if(idx <= currentStep) {
+                            // permitir ir a pasos anteriores ya visitados
+                            if(idx < currentStep) {
+                                currentStep = idx;
+                                showStep(currentStep);
+                            } else if(idx === currentStep) return;
+                            else {
+                                // para avanzar se requiere validar el paso actual
+                                if(validateStep(currentStep)) {
+                                    captureAllRadios();
+                                    currentStep = idx;
+                                    showStep(currentStep);
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Inicializar todo
+            function init() {
+                buildStepsIndicator();
+                // configurar grupos de radio
+                setupRadioGroupSimple('tipoClienteGroup', 'tipoCliente');
+                setupRadioGroupSimple('giroGroup', 'giro');
+                setupRadioGroupSimple('tamanoGroup', 'tamanoEmpresa');
+                setupRadioGroupSimple('necesidadGroup', 'necesidad');
+                setupRadioGroupSimple('materialGroup', 'material');
+                setupRadioGroupSimple('categoriaGroup', 'categoria');
+                setupRadioGroupSimple('subcategoriaGroup', 'subcategoria');
+                setupRadioGroupSimple('presupuestoGroup', 'presupuesto');
+                setupRadioGroupSimple('urgenciaGroup', 'urgencia');
+
+                // eventos input para nombre/email
+                const nombreInput = document.getElementById('nombreContacto');
+                const emailInput = document.getElementById('emailContacto');
+                if(nombreInput) nombreInput.addEventListener('input', (e) => { formData.nombre = e.target.value; updateSummary(); });
+                if(emailInput) emailInput.addEventListener('input', (e) => { formData.email = e.target.value; updateSummary(); });
+
+                prevBtn.addEventListener('click', prevStep);
+                nextBtn.addEventListener('click', nextStep);
+                if(finalSubmitBtn) finalSubmitBtn.addEventListener('click', submitForm);
+                if(goHomeBtn) goHomeBtn.addEventListener('click', goToHome);
+
+                // mostrar paso inicial
+                showStep(0);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>

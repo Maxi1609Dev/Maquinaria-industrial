@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Máquinas industriales · venta minimal</title>
+
+  <!-- Fuente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+      color: #1a1a1a;
+    }
+
+    .wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #e0e0e0;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .logo h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #a04220 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo span {
+      font-size: 0.8rem;
+      color: #000000;
+    }
+
+    .cart-summary {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .cart-summary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .cart-summary a {
+      color: #a04220;
+      text-decoration: none;
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+
+    .cart-summary a:hover {
+      color: #616163;
+    }
+
+    .cart-summary i {
+      font-size: 1.2rem;
+      color: #a04220;
+    }
+
+    .cart-summary .count {
+      background: #a04220;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .cart-summary .total {
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .main-panel {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 30px;
+    }
+
+    .catalog h2 {
+      margin-bottom: 20px;
+      color: #1a1a1a;
+    }
+
+    .machine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .machine-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .machine-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-color: #a04220;
+    }
+
+    .machine-icon {
+      font-size: 2.5rem;
+      color: #a04220;
+      margin-bottom: 15px;
+    }
+
+    .machine-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    .machine-desc {
+      color: #666;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+      line-height: 1.4;
+      min-height: 60px;
+    }
+
+    .price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #a04220;
+      margin-bottom: 15px;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(160, 66, 32, 0.3);
+    }
+
+    /* Carrito lateral */
+    .cart-side {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .cart-side h2 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #1a1a1a;
+    }
+
+    .cart-items {
+      list-style: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .cart-items li {
+      padding: 12px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .cart-empty-msg {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+    }
+
+    .cart-item-info {
+      margin-bottom: 8px;
+    }
+
+    .cart-item-title {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .cart-item-price {
+      font-size: 0.85rem;
+      color: #a04220;
+    }
+
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-item-actions button {
+      background: #f0f0f0;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: bold;
+    }
+
+    .cart-item-actions button:hover {
+      background: #a04220;
+      color: white;
+    }
+
+    .remove-item {
+      background: #fee2e2 !important;
+      color: #dc2626;
+    }
+
+    .remove-item:hover {
+      background: #dc2626 !important;
+      color: white !important;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border-top: 2px solid #e0e0e0;
+      margin-top: 10px;
+    }
+
+    .clear-cart {
+      width: 100%;
+      padding: 10px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .clear-cart:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .buy-cart {
+      width: 100%;
+      padding: 10px;
+      background: #149e24;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .buy-cart:hover {
+      background: #0e7324;
+      transform: translateY(-2px);
+    }
+    .checkout-note {
+      margin-top: 15px;
+      font-size: 0.75rem;
+      color: #999;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .loading i {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .main-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .cart-side {
+        position: static;
+      }
+      
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <div class="logo">
+      <h1>INDUSTRIAL·MIN</h1>
+      <span>maquinaria robusta / diseño simple</span>
+    </div>
+
+    <div class="cart-summary" id="cartSummaryBtn">
+      <a href="login.html"><i class="fa-solid fa-user"></i></a>
+      <i class="fas fa-basket-shopping"></i>
+      <span class="count" id="cartCount">0</span>
+      <span class="total" id="cartTotal">$0</span>
+    </div>
+  </header>
+
+  <div class="main-panel">
+    <section class="catalog">
+      <h2>Máquinas disponibles</h2>
+      <div class="machine-grid" id="machineGrid">
+        <div class="loading">
+          <i class="fas fa-spinner"></i><br>
+          Cargando máquinas...
+        </div>
+      </div>
+    </section>
+
+    <aside class="cart-side" id="cartSide">
+      <h2><i class="fas fa-basket-shopping" style="margin-right: 0.5rem;"></i> Carrito</h2>
+      <ul class="cart-items" id="cartList"></ul>
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartSideTotal">$0</span>
+      </div>
+      <button class="buy-cart" id="BuyCartBtn">
+        <i class="fa-solid fa-cart-shopping"></i> Comprar carrito
+      </button>
+      <button class="clear-cart" id="clearCartBtn">
+        <i class="fas fa-trash-alt"></i> Vaciar carrito
+      </button>
+    </aside>
+  </div>
+
+  <footer>
+    <p>© máquinas industriales — exposición funcional · carrito persistente con JS</p>
+  </footer>
+</div>
+
+<script>
+    (function() {
+    // ----- CONFIGURACIÓN -----
+    const API_URL = 'http://localhost:3000';
+    let machines = [];
+    let cart = [];
+    const STORAGE_KEY = 'industrialMinCart';
+
+    // Elementos del DOM
+    const machineGrid = document.getElementById('machineGrid');
+    const cartList = document.getElementById('cartList');
+    const cartCountSpan = document.getElementById('cartCount');
+    const cartTotalSpan = document.getElementById('cartTotal');
+    const cartSideTotal = document.getElementById('cartSideTotal');
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    const buyCartBtn = document.getElementById('BuyCartBtn');
+
+    // Formato de moneda (MXN)
+    const formatEuro = (value) => {
+      if (!value && value !== 0) return "$0";
+      return value.toLocaleString('es-ES', {
+        style: 'currency',
+        currency: 'MXN',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    };
+
+    // Mostrar mensaje temporal
+    function showTemporaryMessage(message, type = 'success') {
+      const msgDiv = document.createElement('div');
+      const bgColor = type === 'success' ? '#10b981' : '#ef4444';
+      msgDiv.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${bgColor};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      `;
+      msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+      document.body.appendChild(msgDiv);
+      
+      setTimeout(() => {
+        msgDiv.style.opacity = '0';
+        msgDiv.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => msgDiv.remove(), 300);
+      }, 3000);
+    }
+
+    // Cargar máquinas desde el backend
+    async function loadMachines() {
+      try {
+        machineGrid.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><br>Cargando máquinas...</div>';
+        
+        console.log('📡 Consultando:', `${API_URL}/api/producto`);
+        const response = await fetch(`${API_URL}/api/producto`);
+        
+        console.log('📡 Respuesta status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('📦 Datos recibidos:', data);
+        
+        // 🔥 IMPORTANTE: Extraer el array de productos
+        // PostgreSQL devuelve { command, rowCount, rows, oid, fields }
+        if (data && data.rows && Array.isArray(data.rows)) {
+          machines = data.rows;
+          console.log('✅ Extraído array de data.rows');
+        } 
+        // Si es array directo
+        else if (Array.isArray(data)) {
+          machines = data;
+          console.log('✅ Array directo');
+        }
+        // Si es un objeto con otra propiedad que sea array
+        else if (data && typeof data === 'object') {
+          for (let key in data) {
+            if (Array.isArray(data[key])) {
+              machines = data[key];
+              console.log(`✅ Array encontrado en propiedad '${key}'`);
+              break;
+            }
+          }
+        }
+        
+        // Asegurar que machines sea un array
+        if (!Array.isArray(machines)) {
+          console.error('❌ No se pudo extraer un array de la respuesta');
+          machines = [];
+        }
+        
+        console.log(`✅ Máquinas cargadas: ${machines.length}`);
+        
+        if (machines.length === 0) {
+          machineGrid.innerHTML = '<div class="loading">No hay máquinas disponibles en este momento</div>';
+        } else {
+          console.log('📦 Primer producto:', machines[0]);
+          renderCatalog();
+        }
+        
+      } catch (error) {
+        console.error('❌ Error cargando máquinas:', error);
+        machineGrid.innerHTML = `<div class="loading">
+          <i class="fas fa-exclamation-circle"></i><br>
+          Error al cargar las máquinas.<br>
+          <small>${error.message}</small><br><br>
+          <button onclick="location.reload()" style="padding: 8px 16px; background: #a04220; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            <i class="fas fa-sync-alt"></i> Reintentar
+          </button>
+        </div>`;
+      }
+    }
+
+    // Renderizar catálogo de máquinas
+    function renderCatalog() {
+      if (!machineGrid) return;
+      
+      console.log('🎨 Renderizando catálogo con', machines.length, 'productos');
+      
+      if (!machines || machines.length === 0) {
+        machineGrid.innerHTML = '<div class="loading">No hay máquinas disponibles</div>';
+        return;
+      }
+
+      machineGrid.innerHTML = machines.map(machine => {
+        // Usar las propiedades correctas de tu tabla
+        const nombre = machine.nombre || machine.name || 'Sin nombre';
+        const descripcion = machine.descripcion || machine.description || 'Sin descripción';
+        const precio = parseFloat(machine.precio || machine.price || 0);
+        
+        let iconClass = 'fa-industry';
+        
+        return `<div class="machine-card" data-id="${machine.id}">
+          <div class="machine-icon">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <h3>${escapeHtml(nombre)}</h3>
+          <div class="machine-desc">${escapeHtml(descripcion)}</div>
+          <div class="price">${formatEuro(precio)}</div>
+          <button class="add-btn" data-id="${machine.id}">
+            <i class="fas fa-cart-plus"></i> Añadir
+          </button>
+        </div>`;
+      }).join('');
+    }
+
+    // Escapar HTML para prevenir XSS
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Cargar carrito desde localStorage
+    function loadCartFromStorage() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try { 
+          cart = JSON.parse(stored); 
+        } catch(e) { 
+          cart = []; 
+        }
+      } else {
+        cart = [];
+      }
+    }
+
+    // Guardar carrito en localStorage
+    function saveCartToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+    }
+
+    // Calcular totales
+    function getTotalItems() {
+      return cart.reduce((acc, item) => acc + (item.quantity || 0), 0);
+    }
+
+    function getTotalPrice() {
+      return cart.reduce((acc, item) => acc + ((item.price || 0) * (item.quantity || 0)), 0);
+    }
+
+    // Renderizar carrito
+    function renderCart() {
+      const totalItems = getTotalItems();
+      const totalPrice = getTotalPrice();
+      
+      cartCountSpan.textContent = totalItems;
+      cartTotalSpan.textContent = formatEuro(totalPrice);
+      cartSideTotal.textContent = formatEuro(totalPrice);
+
+      if (cart.length === 0) {
+        cartList.innerHTML = `<li class="cart-empty-msg">
+          <i class="fas fa-box-open" style="margin-right:6px;"></i>
+          Carrito vacío
+        </li>`;
+      } else {
+        let htmlStr = '';
+        cart.forEach(item => {
+          const itemTotal = (item.price || 0) * (item.quantity || 0);
+          htmlStr += `<li>
+            <div class="cart-item-info">
+              <span class="cart-item-title">${escapeHtml(item.name)}</span>
+              <span class="cart-item-price">${formatEuro(item.price)} x ${item.quantity} = ${formatEuro(itemTotal)}</span>
+            </div>
+            <div class="cart-item-actions">
+              <button class="decrement-item" data-id="${item.id}" title="Quitar uno">−</button>
+              <span style="min-width:20px; text-align:center;">${item.quantity}</span>
+              <button class="increment-item" data-id="${item.id}" title="Añadir uno">+</button>
+              <button class="remove-item" data-id="${item.id}" title="Eliminar del carrito">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </li>`;
+        });
+        cartList.innerHTML = htmlStr;
+      }
+      
+      saveCartToStorage();
+    }
+
+    // Añadir producto al carrito
+    function addToCart(productId) {
+      const machine = machines.find(m => Number(m.id) === Number(productId));
+      
+      if (!machine) {
+        console.error('Producto no encontrado:', productId);
+        showTemporaryMessage('❌ Error: Producto no encontrado', 'error');
+        return;
+      }
+
+      console.log('Añadiendo al carrito:', machine);
+      
+      const existing = cart.find(item => Number(item.id) === Number(productId));
+      
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({
+          id: machine.id,
+          name: machine.nombre,
+          price: parseFloat(machine.precio) || 0,
+          quantity: 1
+        });
+      }
+      
+      renderCart();
+      showTemporaryMessage(`✓ ${machine.nombre} añadido al carrito`);
+    }
+
+    // Decrementar cantidad
+    function decrementItem(productId) {
+      const idx = cart.findIndex(item => Number(item.id) === Number(productId));
+      if (idx === -1) return;
+
+      if (cart[idx].quantity > 1) {
+        cart[idx].quantity -= 1;
+      } else {
+        cart.splice(idx, 1);
+      }
+      renderCart();
+    }
+
+    // Incrementar cantidad
+    function incrementItem(productId) {
+      const existing = cart.find(item => Number(item.id) === Number(productId));
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        const machine = machines.find(m => Number(m.id) === Number(productId));
+        if (machine) {
+          cart.push({
+            id: machine.id,
+            name: machine.nombre,
+            price: parseFloat(machine.precio) || 0,
+            quantity: 1
+          });
+        }
+      }
+      renderCart();
+    }
+
+    // Eliminar completamente un item
+    function removeItemCompletely(productId) {
+      cart = cart.filter(item => Number(item.id) !== Number(productId));
+      renderCart();
+      showTemporaryMessage(`🗑 Producto eliminado del carrito`);
+    }
+
+    // Vaciar carrito
+    function clearCart() {
+      if (cart.length > 0 && confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+        cart = [];
+        renderCart();
+        showTemporaryMessage(`🗑 Carrito vaciado`);
+      }
+    }
+
+    // Procesar compra
+    async function processPurchase() {
+      if (cart.length === 0) {
+        showTemporaryMessage('❌ El carrito está vacío', 'error');
+        return;
+      }
+      
+      const totalPrice = getTotalPrice();
+      
+      const ventaData = {
+        items: cart.map(item => ({
+          id: item.id,
+          cantidad: item.quantity,
+          precio: item.price,
+          subtotal: item.price * item.quantity
+        })),
+        total: totalPrice,
+        fecha: new Date().toISOString()
+      };
+      
+      console.log('Enviando venta:', ventaData);
+      
+      try {
+        const response = await fetch(`${API_URL}/api/ventas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ventaData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al procesar la venta');
+        }
+        
+        const result = await response.json();
+        console.log('Venta registrada:', result);
+        
+        cart = [];
+        renderCart();
+        showTemporaryMessage('✅ ¡Compra realizada con éxito!', 'success');
+        
+      } catch (error) {
+        console.error('❌ Error en la compra:', error);
+        showTemporaryMessage(`❌ Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Configurar event listeners
+    function setupEventListeners() {
+      // Catálogo: click en añadir
+      machineGrid.addEventListener('click', (e) => {
+        const addButton = e.target.closest('.add-btn');
+        if (addButton) {
+          const id = addButton.dataset.id;
+          if (id) addToCart(id);
+          e.preventDefault();
+        }
+      });
+
+      // Carrito lateral: eventos
+      cartList.addEventListener('click', (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const decrementBtn = target.closest('.decrement-item');
+        const incrementBtn = target.closest('.increment-item');
+        const removeBtn = target.closest('.remove-item');
+
+        if (decrementBtn) {
+          const id = decrementBtn.dataset.id;
+          if (id) decrementItem(id);
+        } else if (incrementBtn) {
+          const id = incrementBtn.dataset.id;
+          if (id) incrementItem(id);
+        } else if (removeBtn) {
+          const id = removeBtn.dataset.id;
+          if (id) removeItemCompletely(id);
+        }
+        e.stopPropagation();
+      });
+
+      // Vaciar carrito
+      if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => clearCart());
+      }
+      
+      // Comprar carrito
+      if (buyCartBtn) {
+        buyCartBtn.addEventListener('click', () => processPurchase());
+      }
+
+      // Scroll al carrito en móvil
+      const cartSummary = document.querySelector('.cart-summary');
+      if (cartSummary) {
+        cartSummary.addEventListener('click', (e) => {
+          if (e.target.closest('a')) return;
+          document.getElementById('cartSide').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest' 
+          });
+        });
+      }
+    }
+
+    // Inicializar
+    async function init() {
+      loadCartFromStorage();
+      await loadMachines();
+      renderCart();
+      setupEventListeners();
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>

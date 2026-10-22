@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - ConstructorApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #616163 0%, #a04220 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 1000px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .register-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .register-header p {
+            opacity: 0.95;
+            font-size: 0.95em;
+        }
+
+        .register-form {
+            padding: 40px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .form-group label i {
+            color: #667eea;
+            margin-right: 8px;
+            width: 18px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #f44336;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Estilos para el campo de identificación */
+        .identification-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #667eea;
+        }
+
+        .password-container {
+            padding-right: 10px;
+        }
+
+        .upload-container {
+            border-left: 2px solid #e0e0e0;
+            padding-left: 20px;
+        }
+
+        .upload-container h3 {
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .upload-container h3 i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .file-upload-area {
+            position: relative;
+            text-align: center;
+        }
+
+        .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #f0f3ff;
+            border-color: #764ba2;
+        }
+
+        .file-upload-label i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-label span {
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-label small {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        .file-upload-label small i {
+            font-size: 0.9em;
+            margin-right: 3px;
+        }
+
+        #identificacion {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .file-preview img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .file-preview .remove-file {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-preview .remove-file:hover {
+            background: #f44336;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .file-info i {
+            color: #4caf50;
+        }
+
+        .password-requirements {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 0.85em;
+        }
+
+        .password-requirements p {
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .password-requirements li {
+            color: #999;
+            margin-bottom: 3px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .password-requirements li::before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #667eea;
+        }
+
+        .password-requirements li.valid {
+            color: #4caf50;
+        }
+
+        .password-requirements li.valid::before {
+            content: "✓";
+            color: #4caf50;
+        }
+
+        .terms-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .terms-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .terms-group label {
+            margin-bottom: 0;
+            font-size: 0.9em;
+        }
+
+        .terms-group a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .terms-group a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register:active {
+            transform: translateY(0);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .identification-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .upload-container {
+                border-left: none;
+                border-top: 2px solid #e0e0e0;
+                padding-left: 0;
+                padding-top: 20px;
+            }
+            
+            .register-form {
+                padding: 20px;
+            }
+            
+            .register-header h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+   <div class="register-container">
+        <div class="register-header">
+            <h1><i class="fas fa-user-plus"></i> Crear Cuenta</h1>
+            <p>Únete a ConstructorApp y gestiona tus proyectos de construcción</p>
+        </div>
+        
+        <div class="register-form">
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> ¡Registro exitoso! Redirigiendo al login...
+            </div>
+
+            <form id="registerForm" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre"><i class="fas fa-user"></i> Nombre *</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre">
+                        <span class="error-message" id="nombreError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellidos"><i class="fas fa-user"></i> Apellidos *</label>
+                        <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos">
+                        <span class="error-message" id="apellidosError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico *</label>
+                        <input type="email" id="email" name="email" placeholder="ejemplo@correo.com">
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono"><i class="fas fa-phone"></i> Número Telefónico *</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="4434813771" maxlength="10" autocomplete="off">
+                        <span class="error-message" id="telefonoError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pais"><i class="fas fa-globe"></i> País *</label>
+                        <select id="pais" name="pais">
+                            <option value="">Selecciona un país</option>
+                            <option value="Mexico">México</option>
+                            <option value="España">España</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Peru">Perú</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Estados Unidos">Estados Unidos</option>
+                        </select>
+                        <span class="error-message" id="paisError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado"><i class="fas fa-map-marker-alt"></i> Estado *</label>
+                        <input type="text" id="estado" name="estado" placeholder="Ingresa tu estado">
+                        <span class="error-message" id="estadoError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ciudad"><i class="fas fa-city"></i> Ciudad *</label>
+                        <input type="text" id="ciudad" name="ciudad" placeholder="Ingresa tu ciudad">
+                        <span class="error-message" id="ciudadError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empresa"><i class="fas fa-building"></i> Constructora o Empresa *</label>
+                        <input type="text" id="empresa" name="empresa" placeholder="Nombre de tu empresa">
+                        <span class="error-message" id="empresaError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rfc"><i class="fas fa-id-card"></i> RFC *</label>
+                        <input type="text" id="rfc" name="rfc" placeholder="XXXX000000XXX" maxlength="13" autocomplete="off" style="text-transform: uppercase;">
+                        <span class="error-message" id="rfcError"></span>
+                        <small style="color: #666; font-size: 12px;">Formato: 4 letras, 6 números, 3 caracteres alfanuméricos</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regimenFiscal"><i class="fas fa-chart-line"></i> Régimen Fiscal *</label>
+                        <select id="regimenFiscal" name="regimenFiscal">
+                            <option value="">Selecciona un régimen fiscal</option>
+                            <option value="601">601 - General de Ley Personas Morales</option>
+                            <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+                            <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                            <option value="606">606 - Arrendamiento</option>
+                            <option value="607">607 - Régimen de Enriquecimiento por Actividades Empresariales y Profesionales</option>
+                            <option value="608">608 - Demás ingresos</option>
+                            <option value="610">610 - RESICO (Empresarial)</option>
+                            <option value="611">611 - RESICO (Personal)</option>
+                            <option value="612">612 - Incorporación Fiscal</option>
+                            <option value="614">614 - Ingresos por intereses</option>
+                            <option value="615">615 - Régimen de los ingresos por obtención de premios</option>
+                            <option value="616">616 - Sin obligaciones fiscales</option>
+                            <option value="620">620 - Sociedades Cooperativas de Producción</option>
+                            <option value="621">621 - Régimen de Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+                            <option value="622">622 - Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                            <option value="623">623 - Régimen Simplificado de Confianza (RESICO)</option>
+                        </select>
+                        <span class="error-message" id="regimenFiscalError"></span>
+                    </div>
+                </div>
+
+                <div class="identification-section">
+                    <div class="password-container">
+                        <div class="form-group">
+                            <label for="password"><i class="fas fa-lock"></i> Contraseña *</label>
+                            <input type="password" id="password" name="password" placeholder="Crea una contraseña">
+                            <span class="error-message" id="passwordError"></span>
+                            <div class="password-requirements" id="passwordRequirements">
+                                <p>La contraseña debe contener:</p>
+                                <ul>
+                                    <li id="reqLength">Mínimo 8 caracteres</li>
+                                    <li id="reqNumber">Al menos un número</li>
+                                    <li id="reqUppercase">Al menos una mayúscula</li>
+                                    <li id="reqLowercase">Al menos una minúscula</li>
+                                    <li id="reqSpecial">Al menos un carácter especial</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword"><i class="fas fa-lock"></i> Confirmar Contraseña *</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirma tu contraseña">
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+                    </div>
+
+                    <div class="upload-container">
+                        <h3><i class="fas fa-id-card"></i> Identificación Oficial *</h3>
+                        <div class="file-upload-area">
+                            <label for="identificacion" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Sube tu identificación</span>
+                                <small><i class="fas fa-info-circle"></i> INE, Pasaporte, Cédula</small>
+                                <small style="margin-top: 5px;">Formatos: JPG, PNG, PDF (Max. 5MB)</small>
+                            </label>
+                            <input type="file" id="identificacion" accept=".jpg,.jpeg,.png,.pdf" name="identificacion">
+                        </div>
+                        
+                        <div class="file-preview" id="filePreview">
+                            <img id="previewImage" src="#" alt="Vista previa">
+                            <button type="button" class="remove-file" id="removeFile" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="file-info" id="fileInfo">
+                            <i class="fas fa-info-circle"></i>
+                            <span id="fileName">Ningún archivo seleccionado</span>
+                        </div>
+                        <span class="error-message" id="identificacionError"></span>
+                    </div>
+                </div>
+
+                <div class="terms-group">
+                    <input type="checkbox" id="terminos">
+                    <label for="terminos">
+                        Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a> *
+                    </label>
+                </div>
+                <span class="error-message" id="terminosError"></span>
+
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+
+                <div class="login-link">
+                    ¿Ya tienes una cuenta? <a href="login.html">Inicia Sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const successMessage = document.getElementById('successMessage');
+
+        // ========== VALIDACIÓN DEL CAMPO TELÉFONO ==========
+        const inputTelefono = document.getElementById('telefono');
+        
+        function limpiarTelefono() {
+            let valor = inputTelefono.value;
+            let soloNumeros = valor.replace(/[^0-9]/g, '');
+            if (soloNumeros.length > 10) {
+                soloNumeros = soloNumeros.slice(0, 10);
+            }
+            if (inputTelefono.value !== soloNumeros) {
+                inputTelefono.value = soloNumeros;
+            }
+            return soloNumeros;
+        }
+        
+        inputTelefono.addEventListener('input', function() {
+            limpiarTelefono();
+            if (inputTelefono.value.length === 10) {
+                document.getElementById('telefonoError').textContent = '';
+                inputTelefono.classList.remove('error');
+            }
+        });
+        
+        inputTelefono.addEventListener('keypress', function(e) {
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+            
+            const teclasEspeciales = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 
+                                      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 
+                                      'Home', 'End', 'PageUp', 'PageDown'];
+            
+            if (teclasEspeciales.includes(e.key)) return;
+            
+            if (this.value.length >= 10) {
+                e.preventDefault();
+                return;
+            }
+            
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+                document.getElementById('telefonoError').textContent = 'Solo se permiten números';
+                this.classList.add('error');
+                
+                setTimeout(() => {
+                    if (document.getElementById('telefonoError').textContent === 'Solo se permiten números') {
+                        document.getElementById('telefonoError').textContent = '';
+                        this.classList.remove('error');
+                    }
+                }, 1500);
+            }
+        });
+        
+        inputTelefono.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const textoPegado = (e.clipboardData || window.clipboardData).getData('text');
+            let soloNumeros = textoPegado.replace(/[^0-9]/g, '');
+            
+            if (soloNumeros.length > 10) {
+                soloNumeros = soloNumeros.slice(0, 10);
+            }
+            
+            const inicio = this.selectionStart;
+            const fin = this.selectionEnd;
+            let valorActual = this.value;
+            let nuevoValor = valorActual.substring(0, inicio) + soloNumeros + valorActual.substring(fin);
+            nuevoValor = nuevoValor.replace(/[^0-9]/g, '');
+            
+            if (nuevoValor.length > 10) {
+                nuevoValor = nuevoValor.slice(0, 10);
+            }
+            
+            this.value = nuevoValor;
+            
+            if (nuevoValor.length === 10) {
+                document.getElementById('telefonoError').textContent = '';
+                this.classList.remove('error');
+            }
+        });
+
+        // ========== VALIDACIÓN DEL RFC ==========
+        const inputRFC = document.getElementById('rfc');
+        
+        inputRFC.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+        
+        function validarRFC(rfc) {
+            const rfcRegex = /^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$/;
+            if (!rfcRegex.test(rfc)) return false;
+            const homoclave = rfc.slice(-3);
+            if (homoclave === '000') return false;
+            return true;
+        }
+        
+        inputRFC.addEventListener('blur', function() {
+            const rfc = this.value;
+            if (rfc && !validarRFC(rfc)) {
+                document.getElementById('rfcError').textContent = 'RFC no válido. Formato: 3-4 letras, 6 números, 3 caracteres alfanuméricos';
+                this.classList.add('error');
+            } else {
+                document.getElementById('rfcError').textContent = '';
+                this.classList.remove('error');
+            }
+        });
+
+        // Validaciones en tiempo real para la contraseña
+        const password = document.getElementById('password');
+        const reqLength = document.getElementById('reqLength');
+        const reqNumber = document.getElementById('reqNumber');
+        const reqUppercase = document.getElementById('reqUppercase');
+        const reqLowercase = document.getElementById('reqLowercase');
+        const reqSpecial = document.getElementById('reqSpecial');
+
+        password.addEventListener('input', function() {
+            const value = this.value;
+            
+            if (value.length >= 8) {
+                reqLength.classList.add('valid');
+            } else {
+                reqLength.classList.remove('valid');
+            }
+            
+            if (/\d/.test(value)) {
+                reqNumber.classList.add('valid');
+            } else {
+                reqNumber.classList.remove('valid');
+            }
+            
+            if (/[A-Z]/.test(value)) {
+                reqUppercase.classList.add('valid');
+            } else {
+                reqUppercase.classList.remove('valid');
+            }
+            
+            if (/[a-z]/.test(value)) {
+                reqLowercase.classList.add('valid');
+            } else {
+                reqLowercase.classList.remove('valid');
+            }
+            
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                reqSpecial.classList.add('valid');
+            } else {
+                reqSpecial.classList.remove('valid');
+            }
+        });
+
+        // Manejo de la subida de archivos
+        const identificacion = document.getElementById('identificacion');
+        const filePreview = document.getElementById('filePreview');
+        const previewImage = document.getElementById('previewImage');
+        const fileName = document.getElementById('fileName');
+
+        identificacion.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('El archivo es demasiado grande. El tamaño máximo es 5MB.');
+                    this.value = '';
+                    return;
+                }
+
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Tipo de archivo no válido. Solo se permiten JPG, PNG y PDF.');
+                    this.value = '';
+                    return;
+                }
+
+                fileName.textContent = file.name;
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        filePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    previewImage.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png';
+                    filePreview.style.display = 'block';
+                }
+            }
+        });
+
+        window.removeFile = function() {
+            identificacion.value = '';
+            filePreview.style.display = 'none';
+            previewImage.src = '#';
+            fileName.textContent = 'Ningún archivo seleccionado';
+        };
+
+        function validateForm() {
+            let isValid = true;
+            
+            document.querySelectorAll('.error-message').forEach(e => e.textContent = '');
+            document.querySelectorAll('input, select').forEach(e => e.classList.remove('error'));
+
+            const nombre = document.getElementById('nombre');
+            if (!nombre.value.trim()) {
+                document.getElementById('nombreError').textContent = 'El nombre es requerido';
+                nombre.classList.add('error');
+                isValid = false;
+            } else if (nombre.value.trim().length < 2) {
+                document.getElementById('nombreError').textContent = 'El nombre debe tener al menos 2 caracteres';
+                nombre.classList.add('error');
+                isValid = false;
+            }
+
+            const apellidos = document.getElementById('apellidos');
+            if (!apellidos.value.trim()) {
+                document.getElementById('apellidosError').textContent = 'Los apellidos son requeridos';
+                apellidos.classList.add('error');
+                isValid = false;
+            }
+
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email.value.trim()) {
+                document.getElementById('emailError').textContent = 'El correo es requerido';
+                email.classList.add('error');
+                isValid = false;
+            } else if (!emailRegex.test(email.value)) {
+                document.getElementById('emailError').textContent = 'Ingresa un correo válido';
+                email.classList.add('error');
+                isValid = false;
+            }
+
+            const telefono = document.getElementById('telefono');
+            const telefonoLimpio = limpiarTelefono();
+            
+            if (!telefonoLimpio) {
+                document.getElementById('telefonoError').textContent = 'El número telefónico es requerido';
+                telefono.classList.add('error');
+                isValid = false;
+            } else if (telefonoLimpio.length !== 10) {
+                document.getElementById('telefonoError').textContent = 'El número telefónico debe tener exactamente 10 dígitos';
+                telefono.classList.add('error');
+                isValid = false;
+            }
+
+            const pais = document.getElementById('pais');
+            if (!pais.value) {
+                document.getElementById('paisError').textContent = 'Selecciona un país';
+                pais.classList.add('error');
+                isValid = false;
+            }
+
+            const estado = document.getElementById('estado');
+            if (!estado.value.trim()) {
+                document.getElementById('estadoError').textContent = 'El estado es requerido';
+                estado.classList.add('error');
+                isValid = false;
+            }
+
+            const ciudad = document.getElementById('ciudad');
+            if (!ciudad.value.trim()) {
+                document.getElementById('ciudadError').textContent = 'La ciudad es requerida';
+                ciudad.classList.add('error');
+                isValid = false;
+            }
+
+            const empresa = document.getElementById('empresa');
+            if (!empresa.value.trim()) {
+                document.getElementById('empresaError').textContent = 'El nombre de la empresa es requerido';
+                empresa.classList.add('error');
+                isValid = false;
+            }
+
+            const rfc = document.getElementById('rfc');
+            if (!rfc.value.trim()) {
+                document.getElementById('rfcError').textContent = 'El RFC es requerido';
+                rfc.classList.add('error');
+                isValid = false;
+            } else if (!validarRFC(rfc.value.trim())) {
+                document.getElementById('rfcError').textContent = 'RFC no válido. Formato: 3-4 letras, 6 números, 3 caracteres alfanuméricos';
+                rfc.classList.add('error');
+                isValid = false;
+            }
+
+            const regimenFiscal = document.getElementById('regimenFiscal');
+            if (!regimenFiscal.value) {
+                document.getElementById('regimenFiscalError').textContent = 'Selecciona un régimen fiscal';
+                regimenFiscal.classList.add('error');
+                isValid = false;
+            }
+
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+            if (!password.value) {
+                document.getElementById('passwordError').textContent = 'La contraseña es requerida';
+                password.classList.add('error');
+                isValid = false;
+            } else if (!passwordRegex.test(password.value)) {
+                document.getElementById('passwordError').textContent = 'La contraseña no cumple con los requisitos';
+                password.classList.add('error');
+                isValid = false;
+            }
+
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (!confirmPassword.value) {
+                document.getElementById('confirmPasswordError').textContent = 'Confirma tu contraseña';
+                confirmPassword.classList.add('error');
+                isValid = false;
+            } else if (confirmPassword.value !== password.value) {
+                document.getElementById('confirmPasswordError').textContent = 'Las contraseñas no coinciden';
+                confirmPassword.classList.add('error');
+                isValid = false;
+            }
+
+            if (!identificacion.files || identificacion.files.length === 0) {
+                document.getElementById('identificacionError').textContent = 'Debes subir una identificación oficial';
+                isValid = false;
+            }
+
+            const terminos = document.getElementById('terminos');
+            if (!terminos.checked) {
+                document.getElementById('terminosError').textContent = 'Debes aceptar los términos y condiciones';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                const submitBtn = document.querySelector('.btn-register');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append('nombre', document.getElementById('nombre').value);
+                formData.append('apellidos', document.getElementById('apellidos').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('telefono', document.getElementById('telefono').value);
+                formData.append('pais', document.getElementById('pais').value);
+                formData.append('estado', document.getElementById('estado').value);
+                formData.append('ciudad', document.getElementById('ciudad').value);
+                formData.append('empresa', document.getElementById('empresa').value);
+                formData.append('rfc', document.getElementById('rfc').value);
+                formData.append('regimenFiscal', document.getElementById('regimenFiscal').value);
+                formData.append('password', document.getElementById('password').value);
+                
+                if (identificacion.files[0]) {
+                    formData.append('identificacion', identificacion.files[0]);
+                }
+
+                try {
+                    const response = await fetch('/api/registro', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        successMessage.style.display = 'block';
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        alert(data.message || 'Error al registrar usuario');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error de conexión con el servidor. Asegúrate de que el servidor Node.js esté corriendo.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+
+        document.getElementById('email').addEventListener('blur', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                document.getElementById('emailError').textContent = 'Ingresa un correo válido';
+                this.classList.add('error');
+            } else {
+                document.getElementById('emailError').textContent = '';
+                this.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
